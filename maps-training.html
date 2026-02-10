@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAPS Training Simulation - Manufacturing & Production System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .system-header {
+            background: linear-gradient(135deg, #0f4c81 0%, #1a6bb5 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .system-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #0f4c81;
+            font-size: 18px;
+        }
+
+        .system-title h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .system-title p {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .training-badge {
+            background: #ffd700;
+            color: #0f4c81;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .user-details {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-role {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        /* Main Container */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 70px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #2a2a2a;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .mode-selector {
+            margin-bottom: 25px;
+        }
+
+        .mode-selector h3 {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mode-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mode-btn {
+            background: #3a3a3a;
+            border: 2px solid #4a4a4a;
+            color: #e0e0e0;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .mode-btn:hover {
+            background: #4a4a4a;
+            border-color: #1a6bb5;
+        }
+
+        .mode-btn.active {
+            background: #1a6bb5;
+            border-color: #1a6bb5;
+            color: white;
+        }
+
+        .scenario-list {
+            margin-top: 25px;
+        }
+
+        .scenario-list h3 {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .scenario-item {
+            background: #3a3a3a;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .scenario-item:hover {
+            background: #4a4a4a;
+            border-left-color: #1a6bb5;
+        }
+
+        .scenario-item.active {
+            background: #4a4a4a;
+            border-left-color: #1a6bb5;
+        }
+
+        .scenario-item.completed {
+            border-left-color: #4caf50;
+        }
+
+        .scenario-title {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .scenario-desc {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .completion-status {
+            display: inline-block;
+            margin-left: 8px;
+            color: #4caf50;
+            font-size: 12px;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .welcome-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .welcome-header h2 {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: #1a6bb5;
+        }
+
+        .welcome-header p {
+            font-size: 16px;
+            color: #999;
+        }
+
+        .mode-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .mode-card {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid #3a3a3a;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-card:hover {
+            border-color: #1a6bb5;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(26, 107, 181, 0.3);
+        }
+
+        .mode-card-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .mode-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #1a6bb5;
+        }
+
+        .mode-card p {
+            font-size: 14px;
+            color: #999;
+            line-height: 1.6;
+        }
+
+        /* Tutorial Overlay */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tutorial-overlay.active {
+            display: flex;
+        }
+
+        .tutorial-box {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .tutorial-step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4a4a4a;
+        }
+
+        .step-dot.active {
+            background: #1a6bb5;
+        }
+
+        .step-dot.completed {
+            background: #4caf50;
+        }
+
+        .tutorial-content h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #1a6bb5;
+        }
+
+        .tutorial-content p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+
+        .tutorial-highlight {
+            background: #3a3a3a;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #1a6bb5;
+            margin: 20px 0;
+        }
+
+        .tutorial-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #1a6bb5;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #155a9a;
+        }
+
+        .btn-secondary {
+            background: #3a3a3a;
+            color: #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #4a4a4a;
+        }
+
+        /* Simulation Interface */
+        .simulation-screen {
+            display: none;
+        }
+
+        .simulation-screen.active {
+            display: block;
+        }
+
+        .simulation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3a3a3a;
+        }
+
+        .scenario-info h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .scenario-info p {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .progress-indicator {
+            text-align: right;
+        }
+
+        .progress-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background: #3a3a3a;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1a6bb5, #2196f3);
+            transition: width 0.5s;
+        }
+
+        /* MES Interface */
+        .mes-interface {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .mes-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3a3a3a;
+        }
+
+        .mes-tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .mes-tab:hover {
+            color: #e0e0e0;
+        }
+
+        .mes-tab.active {
+            color: #1a6bb5;
+            border-bottom-color: #1a6bb5;
+        }
+
+        .mes-content {
+            display: none;
+        }
+
+        .mes-content.active {
+            display: block;
+        }
+
+        /* Production Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #3a3a3a;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #1a6bb5;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a6bb5;
+        }
+
+        .stat-unit {
+            font-size: 14px;
+            color: #999;
+            margin-left: 5px;
+        }
+
+        /* Form Elements */
+        .form-section {
+            background: #3a3a3a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .form-section h4 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #1a6bb5;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: #2a2a2a;
+            border: 2px solid #4a4a4a;
+            color: #e0e0e0;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a6bb5;
+        }
+
+        .form-group input.highlight,
+        .form-group select.highlight {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { border-color: #ffd700; box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+            50% { border-color: #ffd700; box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        /* Guidance Panel */
+        .guidance-panel {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #ffd700;
+        }
+
+        .guidance-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .guidance-icon {
+            width: 30px;
+            height: 30px;
+            background: #ffd700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a1a1a;
+            font-weight: bold;
+        }
+
+        .guidance-header h4 {
+            font-size: 16px;
+            color: #ffd700;
+        }
+
+        .guidance-content {
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        .guidance-steps {
+            margin-top: 15px;
+        }
+
+        .guidance-step {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #3a3a3a;
+            border-radius: 6px;
+            display: flex;
+            align-items: start;
+            gap: 12px;
+        }
+
+        .step-number {
+            background: #1a6bb5;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-number.completed {
+            background: #4caf50;
+        }
+
+        .step-text {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        /* Feedback Messages */
+        .feedback-message {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .feedback-message.show {
+            display: flex;
+        }
+
+        .feedback-message.success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid #4caf50;
+            color: #4caf50;
+        }
+
+        .feedback-message.error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 2px solid #f44336;
+            color: #f44336;
+        }
+
+        .feedback-message.info {
+            background: rgba(26, 107, 181, 0.2);
+            border: 2px solid #1a6bb5;
+            color: #1a6bb5;
+        }
+
+        .feedback-icon {
+            font-size: 24px;
+        }
+
+        /* Work Instructions */
+        .work-instruction {
+            background: #3a3a3a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .instruction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .instruction-id {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        .instruction-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .instruction-status.pending {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+        }
+
+        .instruction-status.complete {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .instruction-content {
+            margin-bottom: 15px;
+        }
+
+        .instruction-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .instruction-details {
+            font-size: 14px;
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        .instruction-checklist {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .checklist-item {
+            padding: 10px;
+            margin-bottom: 5px;
+            background: #2a2a2a;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checklist-item:hover {
+            background: #4a4a4a;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* Assessment Results */
+        .assessment-results {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .results-score {
+            font-size: 72px;
+            font-weight: 700;
+            color: #1a6bb5;
+            margin: 20px 0;
+        }
+
+        .results-message {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .results-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .breakdown-item {
+            background: #3a3a3a;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .breakdown-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .breakdown-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a6bb5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+
+            .main-container {
+                flex-direction: column;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- System Header -->
+    <div class="system-header">
+        <div class="system-logo">
+            <div class="logo-icon">M</div>
+            <div class="system-title">
+                <h1>MAPS Training Simulator</h1>
+                <p>Manufacturing & Production System</p>
+            </div>
+        </div>
+        <div class="user-info">
+            <div class="training-badge">🎓 Training Mode</div>
+            <div class="user-details">
+                <div class="user-name">Trainee Operator</div>
+                <div class="user-role">Shop Floor Technician</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="mode-selector">
+                <h3>Training Modes</h3>
+                <div class="mode-buttons">
+                    <button class="mode-btn active" data-mode="welcome">📚 Getting Started</button>
+                    <button class="mode-btn" data-mode="tutorial">🎯 Guided Tutorial</button>
+                    <button class="mode-btn" data-mode="practice">🔧 Practice Mode</button>
+                    <button class="mode-btn" data-mode="assessment">✅ Assessment</button>
+                </div>
+            </div>
+
+            <div class="scenario-list">
+                <h3>Available Scenarios</h3>
+                <div class="scenario-item" data-scenario="production-log">
+                    <div class="scenario-title">Production Logging</div>
+                    <div class="scenario-desc">Record production data and metrics</div>
+                </div>
+                <div class="scenario-item" data-scenario="quality-check">
+                    <div class="scenario-title">Quality Inspection</div>
+                    <div class="scenario-desc">Document quality control checks</div>
+                </div>
+                <div class="scenario-item" data-scenario="downtime-report">
+                    <div class="scenario-title">Downtime Reporting</div>
+                    <div class="scenario-desc">Log equipment downtime and issues</div>
+                </div>
+                <div class="scenario-item" data-scenario="material-tracking">
+                    <div class="scenario-title">Material Tracking</div>
+                    <div class="scenario-desc">Track component usage and inventory</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Welcome Screen -->
+            <div class="welcome-screen active" id="welcome-screen">
+                <div class="welcome-header">
+                    <h2>Welcome to MAPS Training</h2>
+                    <p>Master the Manufacturing & Production System through interactive learning</p>
+                </div>
+
+                <div class="mode-cards">
+                    <div class="mode-card" data-mode="tutorial">
+                        <div class="mode-card-icon">🎯</div>
+                        <h3>Guided Tutorial</h3>
+                        <p>Learn step-by-step with real-time guidance and tips for each MAPS function.</p>
+                    </div>
+                    <div class="mode-card" data-mode="practice">
+                        <div class="mode-card-icon">🔧</div>
+                        <h3>Practice Mode</h3>
+                        <p>Practice in a safe sandbox environment without impacting production data.</p>
+                    </div>
+                    <div class="mode-card" data-mode="assessment">
+                        <div class="mode-card-icon">✅</div>
+                        <h3>Assessment</h3>
+                        <p>Test your knowledge and demonstrate your proficiency with MAPS.</p>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h4>Why MAPS Training Matters</h4>
+                    <p style="color: #ccc; line-height: 1.6;">
+                        Accurate data entry in MAPS is critical for tracking production, maintaining quality standards, 
+                        and ensuring vehicles meet specifications. This training will help you confidently use MAPS to 
+                        support our manufacturing operations and achieve 100% data accuracy.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Simulation Screen -->
+            <div class="simulation-screen" id="simulation-screen">
+                <div class="simulation-header">
+                    <div class="scenario-info">
+                        <h2 id="scenario-title">Production Logging</h2>
+                        <p id="scenario-description">Record completed vehicle production data</p>
+                    </div>
+                    <div class="progress-indicator">
+                        <div class="progress-label">Completion Progress</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feedback Message -->
+                <div class="feedback-message" id="feedback-message">
+                    <div class="feedback-icon">✓</div>
+                    <div class="feedback-text"></div>
+                </div>
+
+                <!-- Guidance Panel -->
+                <div class="guidance-panel" id="guidance-panel">
+                    <div class="guidance-header">
+                        <div class="guidance-icon">💡</div>
+                        <h4>Step-by-Step Guide</h4>
+                    </div>
+                    <div class="guidance-content">
+                        <p id="guidance-text">Select a field to see specific guidance...</p>
+                        <div class="guidance-steps" id="guidance-steps"></div>
+                    </div>
+                </div>
+
+                <!-- MES Interface -->
+                <div class="mes-interface">
+                    <div class="mes-tabs">
+                        <button class="mes-tab active" data-tab="production">Production Entry</button>
+                        <button class="mes-tab" data-tab="quality">Quality Checks</button>
+                        <button class="mes-tab" data-tab="downtime">Downtime Log</button>
+                        <button class="mes-tab" data-tab="materials">Materials</button>
+                    </div>
+
+                    <!-- Production Tab -->
+                    <div class="mes-content active" id="production-content">
+                        <div class="form-section">
+                            <h4>Vehicle Production Entry</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>VIN (Vehicle ID Number) *</label>
+                                    <input type="text" id="vin" placeholder="Enter 17-character VIN" maxlength="17">
+                                </div>
+                                <div class="form-group">
+                                    <label>Workstation *</label>
+                                    <select id="workstation">
+                                        <option value="">Select Workstation</option>
+                                        <option value="WS-101">WS-101 - Body Assembly</option>
+                                        <option value="WS-102">WS-102 - Paint Shop</option>
+                                        <option value="WS-103">WS-103 - Final Assembly</option>
+                                        <option value="WS-104">WS-104 - Quality Gate</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Model/Variant *</label>
+                                    <select id="model">
+                                        <option value="">Select Model</option>
+                                        <option value="R1T-ADV">R1T - Adventure Package</option>
+                                        <option value="R1T-EXP">R1T - Explore Package</option>
+                                        <option value="R1S-ADV">R1S - Adventure Package</option>
+                                        <option value="R1S-EXP">R1S - Explore Package</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Status *</label>
+                                    <select id="status">
+                                        <option value="">Select Status</option>
+                                        <option value="in-progress">In Progress</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="hold">On Hold</option>
+                                        <option value="rework">Needs Rework</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Completion Time</label>
+                                    <input type="time" id="completion-time">
+                                </div>
+                                <div class="form-group">
+                                    <label>Operator ID</label>
+                                    <input type="text" id="operator-id" value="OP-7842" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Notes (Optional)</label>
+                                <textarea id="production-notes" rows="3" placeholder="Add any relevant notes..."></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-secondary" id="clear-btn">Clear Form</button>
+                                <button class="btn btn-primary" id="submit-btn">Submit Entry</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quality Tab -->
+                    <div class="mes-content" id="quality-content">
+                        <div class="work-instruction">
+                            <div class="instruction-header">
+                                <div class="instruction-id">QC-CHECK-001</div>
+                                <div class="instruction-status pending">Pending</div>
+                            </div>
+                            <div class="instruction-content">
+                                <div class="instruction-title">Pre-Delivery Quality Inspection</div>
+                                <div class="instruction-details">
+                                    Complete all inspection points before marking vehicle as ready for delivery.
+                                </div>
+                            </div>
+                            <ul class="instruction-checklist">
+                                <li class="checklist-item">
+                                    <input type="checkbox" id="check1">
+                                    <label for="check1">Verify all body panels aligned and gaps within spec (2-5mm)</label>
+                                </li>
+                                <li class="checklist-item">
+                                    <input type="checkbox" id="check2">
+                                    <label for="check2">Check paint finish for defects (runs, orange peel, contamination)</label>
+                                </li>
+                                <li class="checklist-item">
+                                    <input type="checkbox" id="check3">
+                                    <label for="check3">Test all electrical systems (lights, windows, infotainment)</label>
+                                </li>
+                                <li class="checklist-item">
+                                    <input type="checkbox" id="check4">
+                                    <label for="check4">Confirm battery charge level above 80%</label>
+                                </li>
+                                <li class="checklist-item">
+                                    <input type="checkbox" id="check5">
+                                    <label for="check5">Verify VIN matches production order</label>
+                                </li>
+                            </ul>
+                            <div class="form-actions">
+                                <button class="btn btn-primary" id="complete-qc-btn">Mark Complete</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Downtime Tab -->
+                    <div class="mes-content" id="downtime-content">
+                        <div class="form-section">
+                            <h4>Equipment Downtime Report</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Equipment ID *</label>
+                                    <select id="equipment">
+                                        <option value="">Select Equipment</option>
+                                        <option value="ROBOT-A12">ROBOT-A12 - Welding Robot</option>
+                                        <option value="ROBOT-B08">ROBOT-B08 - Paint Robot</option>
+                                        <option value="CONV-C04">CONV-C04 - Assembly Conveyor</option>
+                                        <option value="TOOL-T22">TOOL-T22 - Torque Tool Station</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Downtime Category *</label>
+                                    <select id="downtime-category">
+                                        <option value="">Select Category</option>
+                                        <option value="mechanical">Mechanical Failure</option>
+                                        <option value="electrical">Electrical Issue</option>
+                                        <option value="material">Material Shortage</option>
+                                        <option value="changeover">Model Changeover</option>
+                                        <option value="maintenance">Scheduled Maintenance</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Start Time *</label>
+                                    <input type="datetime-local" id="downtime-start">
+                                </div>
+                                <div class="form-group">
+                                    <label>End Time</label>
+                                    <input type="datetime-local" id="downtime-end">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Problem Description *</label>
+                                <textarea id="problem-desc" rows="3" placeholder="Describe the issue in detail..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Resolution/Action Taken</label>
+                                <textarea id="resolution" rows="3" placeholder="Describe how the issue was resolved..."></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-secondary">Clear Form</button>
+                                <button class="btn btn-primary" id="submit-downtime-btn">Submit Report</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Materials Tab -->
+                    <div class="mes-content" id="materials-content">
+                        <div class="form-section">
+                            <h4>Material Usage Tracking</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Part Number *</label>
+                                    <input type="text" id="part-number" placeholder="Enter part number">
+                                </div>
+                                <div class="form-group">
+                                    <label>Part Description</label>
+                                    <input type="text" id="part-desc" placeholder="e.g., Battery Module - 135kWh">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Quantity Used *</label>
+                                    <input type="number" id="quantity" min="1" placeholder="0">
+                                </div>
+                                <div class="form-group">
+                                    <label>Lot/Serial Number</label>
+                                    <input type="text" id="lot-number" placeholder="Enter lot or serial number">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Associated VIN</label>
+                                    <input type="text" id="material-vin" placeholder="Link to vehicle VIN">
+                                </div>
+                                <div class="form-group">
+                                    <label>Workstation</label>
+                                    <select id="material-workstation">
+                                        <option value="">Select Workstation</option>
+                                        <option value="WS-101">WS-101 - Body Assembly</option>
+                                        <option value="WS-102">WS-102 - Paint Shop</option>
+                                        <option value="WS-103">WS-103 - Final Assembly</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-secondary">Clear Form</button>
+                                <button class="btn btn-primary" id="submit-material-btn">Log Material Usage</button>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-grid" style="margin-top: 25px;">
+                            <div class="stat-card">
+                                <div class="stat-label">Current Stock Level</div>
+                                <div class="stat-value">847<span class="stat-unit">units</span></div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Reorder Point</div>
+                                <div class="stat-value">200<span class="stat-unit">units</span></div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Daily Usage Rate</div>
+                                <div class="stat-value">45<span class="stat-unit">units/day</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutorial Overlay -->
+    <div class="tutorial-overlay" id="tutorial-overlay">
+        <div class="tutorial-box">
+            <div class="tutorial-step-indicator" id="tutorial-steps"></div>
+            <div class="tutorial-content">
+                <h3 id="tutorial-title">Welcome to MAPS Tutorial</h3>
+                <p id="tutorial-text">Let's learn how to use the Manufacturing & Production System step by step.</p>
+                <div class="tutorial-highlight" id="tutorial-highlight" style="display: none;">
+                    <strong>💡 Key Point:</strong> <span id="highlight-text"></span>
+                </div>
+            </div>
+            <div class="tutorial-buttons">
+                <button class="btn btn-secondary" id="tutorial-skip">Skip Tutorial</button>
+                <button class="btn btn-primary" id="tutorial-next">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State Management
+        const state = {
+            currentMode: 'welcome',
+            currentScenario: 'production-log',
+            tutorialStep: 0,
+            completedSteps: [],
+            score: 0
+        };
+
+        // Tutorial Steps
+        const tutorialSteps = [
+            {
+                title: "Welcome to MAPS Tutorial",
+                text: "The Manufacturing & Production System (MAPS) is your digital tool for tracking production, quality, and materials. Let's learn the basics together.",
+                highlight: null
+            },
+            {
+                title: "Understanding the Interface",
+                text: "The MAPS interface has tabs for different functions: Production Entry, Quality Checks, Downtime Logging, and Material Tracking. Each tab helps you record specific data accurately.",
+                highlight: "All data you enter creates a traceable record that ensures vehicle quality and supports our production goals."
+            },
+            {
+                title: "Production Entry - Step 1",
+                text: "Let's start by logging a completed vehicle. First, enter the VIN (Vehicle Identification Number). This 17-character code uniquely identifies each vehicle.",
+                highlight: "VINs must be entered exactly as shown on the vehicle - accuracy here prevents tracking errors."
+            },
+            {
+                title: "Production Entry - Step 2",
+                text: "Next, select your workstation from the dropdown. This tells MAPS where the vehicle was processed and helps track workflow.",
+                highlight: "Always select YOUR current workstation - this ensures accountability and accurate production metrics."
+            },
+            {
+                title: "Production Entry - Step 3",
+                text: "Choose the vehicle model and variant. This information links to specifications and ensures the right parts were used.",
+                highlight: null
+            },
+            {
+                title: "Production Entry - Step 4",
+                text: "Select the status: 'Completed' means the vehicle passed all checks at your station. Use 'Hold' or 'Rework' if issues were found.",
+                highlight: "Honest status reporting prevents defects from reaching customers and helps our team address issues quickly."
+            },
+            {
+                title: "Submitting Your Entry",
+                text: "Once all required fields (marked with *) are filled, click 'Submit Entry'. MAPS will validate your data and create a permanent record.",
+                highlight: "Take a moment to review before submitting - accurate data is critical for our production success."
+            },
+            {
+                title: "Tutorial Complete!",
+                text: "Great job! You now know the basics of production logging in MAPS. Try Practice Mode to build confidence, then take the Assessment to demonstrate your skills.",
+                highlight: null
+            }
+        ];
+
+        // DOM Elements
+        const modeButtons = document.querySelectorAll('.mode-btn');
+        const modeCards = document.querySelectorAll('.mode-card');
+        const scenarioItems = document.querySelectorAll('.scenario-item');
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const simulationScreen = document.getElementById('simulation-screen');
+        const tutorialOverlay = document.getElementById('tutorial-overlay');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const guidancePanel = document.getElementById('guidance-panel');
+        const mesTabs = document.querySelectorAll('.mes-tab');
+        const mesContents = document.querySelectorAll('.mes-content');
+
+        // Mode Switching
+        function switchMode(mode) {
+            state.currentMode = mode;
+            
+            modeButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+
+            if (mode === 'welcome') {
+                welcomeScreen.classList.add('active');
+                simulationScreen.classList.remove('active');
+                tutorialOverlay.classList.remove('active');
+            } else if (mode === 'tutorial') {
+                welcomeScreen.classList.remove('active');
+                simulationScreen.classList.add('active');
+                guidancePanel.style.display = 'block';
+                startTutorial();
+            } else if (mode === 'practice') {
+                welcomeScreen.classList.remove('active');
+                simulationScreen.classList.add('active');
+                guidancePanel.style.display = 'none';
+                tutorialOverlay.classList.remove('active');
+                showFeedback('info', 'Practice Mode: Experiment freely - your entries won\'t affect production data.');
+            } else if (mode === 'assessment') {
+                welcomeScreen.classList.remove('active');
+                simulationScreen.classList.add('active');
+                guidancePanel.style.display = 'none';
+                tutorialOverlay.classList.remove('active');
+                showFeedback('info', 'Assessment Mode: Complete the task accurately to demonstrate your MAPS proficiency.');
+            }
+        }
+
+        // Tutorial Functions
+        function startTutorial() {
+            state.tutorialStep = 0;
+            updateTutorial();
+            tutorialOverlay.classList.add('active');
+        }
+
+        function updateTutorial() {
+            const step = tutorialSteps[state.tutorialStep];
+            const totalSteps = tutorialSteps.length;
+            
+            document.getElementById('tutorial-title').textContent = step.title;
+            document.getElementById('tutorial-text').textContent = step.text;
+            
+            const highlightBox = document.getElementById('tutorial-highlight');
+            if (step.highlight) {
+                highlightBox.style.display = 'block';
+                document.getElementById('highlight-text').textContent = step.highlight;
+            } else {
+                highlightBox.style.display = 'none';
+            }
+
+            // Update step indicators
+            const stepIndicator = document.getElementById('tutorial-steps');
+            stepIndicator.innerHTML = '';
+            for (let i = 0; i < totalSteps; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'step-dot';
+                if (i < state.tutorialStep) dot.classList.add('completed');
+                if (i === state.tutorialStep) dot.classList.add('active');
+                stepIndicator.appendChild(dot);
+            }
+
+            // Update button text
+            const nextBtn = document.getElementById('tutorial-next');
+            if (state.tutorialStep === totalSteps - 1) {
+                nextBtn.textContent = 'Start Practicing';
+            } else {
+                nextBtn.textContent = 'Next';
+            }
+
+            // Highlight relevant fields
+            removeAllHighlights();
+            if (state.tutorialStep === 2) {
+                document.getElementById('vin').classList.add('highlight');
+            } else if (state.tutorialStep === 3) {
+                document.getElementById('workstation').classList.add('highlight');
+            } else if (state.tutorialStep === 4) {
+                document.getElementById('model').classList.add('highlight');
+            } else if (state.tutorialStep === 5) {
+                document.getElementById('status').classList.add('highlight');
+            }
+        }
+
+        function removeAllHighlights() {
+            document.querySelectorAll('.highlight').forEach(el => {
+                el.classList.remove('highlight');
+            });
+        }
+
+        // Feedback Messages
+        function showFeedback(type, message) {
+            feedbackMessage.className = `feedback-message ${type} show`;
+            feedbackMessage.querySelector('.feedback-text').textContent = message;
+            
+            setTimeout(() => {
+                feedbackMessage.classList.remove('show');
+            }, 5000);
+        }
+
+        // Form Validation
+        function validateProductionForm() {
+            const vin = document.getElementById('vin').value;
+            const workstation = document.getElementById('workstation').value;
+            const model = document.getElementById('model').value;
+            const status = document.getElementById('status').value;
+
+            const errors = [];
+
+            if (!vin || vin.length !== 17) {
+                errors.push('VIN must be exactly 17 characters');
+            }
+            if (!workstation) {
+                errors.push('Workstation is required');
+            }
+            if (!model) {
+                errors.push('Model/Variant is required');
+            }
+            if (!status) {
+                errors.push('Status is required');
+            }
+
+            return errors;
+        }
+
+        // Event Listeners
+        modeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchMode(btn.dataset.mode);
+            });
+        });
+
+        modeCards.forEach(card => {
+            card.addEventListener('click', () => {
+                switchMode(card.dataset.mode);
+            });
+        });
+
+        scenarioItems.forEach(item => {
+            item.addEventListener('click', () => {
+                scenarioItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                state.currentScenario = item.dataset.scenario;
+            });
+        });
+
+        mesTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                
+                mesTabs.forEach(t => t.classList.remove('active'));
+                mesContents.forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(`${tabName}-content`).classList.add('active');
+            });
+        });
+
+        document.getElementById('tutorial-next').addEventListener('click', () => {
+            state.tutorialStep++;
+            if (state.tutorialStep >= tutorialSteps.length) {
+                tutorialOverlay.classList.remove('active');
+                switchMode('practice');
+            } else {
+                updateTutorial();
+            }
+        });
+
+        document.getElementById('tutorial-skip').addEventListener('click', () => {
+            tutorialOverlay.classList.remove('active');
+        });
+
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            const errors = validateProductionForm();
+            
+            if (errors.length > 0) {
+                showFeedback('error', errors.join('. ') + '.');
+            } else {
+                showFeedback('success', '✓ Production entry submitted successfully! Data has been recorded in MAPS.');
+                
+                // Update progress
+                const progress = document.getElementById('progress-fill');
+                const currentWidth = parseInt(progress.style.width) || 0;
+                progress.style.width = Math.min(currentWidth + 25, 100) + '%';
+                
+                // Mark scenario as completed
+                const activeScenario = document.querySelector('.scenario-item.active');
+                if (activeScenario && !activeScenario.classList.contains('completed')) {
+                    activeScenario.classList.add('completed');
+                    activeScenario.querySelector('.scenario-title').innerHTML += ' <span class="completion-status">✓</span>';
+                }
+            }
+        });
+
+        document.getElementById('clear-btn').addEventListener('click', () => {
+            document.getElementById('vin').value = '';
+            document.getElementById('workstation').value = '';
+            document.getElementById('model').value = '';
+            document.getElementById('status').value = '';
+            document.getElementById('completion-time').value = '';
+            document.getElementById('production-notes').value = '';
+        });
+
+        document.getElementById('complete-qc-btn').addEventListener('click', () => {
+            const checkboxes = document.querySelectorAll('.checklist-item input[type="checkbox"]');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            
+            if (allChecked) {
+                showFeedback('success', '✓ Quality inspection completed! Vehicle approved for next stage.');
+                document.querySelector('.instruction-status').className = 'instruction-status complete';
+                document.querySelector('.instruction-status').textContent = 'Complete';
+            } else {
+                showFeedback('error', 'Please complete all inspection points before marking as complete.');
+            }
+        });
+
+        document.getElementById('submit-downtime-btn').addEventListener('click', () => {
+            const equipment = document.getElementById('equipment').value;
+            const category = document.getElementById('downtime-category').value;
+            const start = document.getElementById('downtime-start').value;
+            const description = document.getElementById('problem-desc').value;
+
+            if (equipment && category && start && description) {
+                showFeedback('success', '✓ Downtime report submitted. Maintenance team has been notified.');
+            } else {
+                showFeedback('error', 'Please fill in all required fields (*).');
+            }
+        });
+
+        document.getElementById('submit-material-btn').addEventListener('click', () => {
+            const partNumber = document.getElementById('part-number').value;
+            const quantity = document.getElementById('quantity').value;
+
+            if (partNumber && quantity && parseInt(quantity) > 0) {
+                showFeedback('success', '✓ Material usage logged. Inventory system updated.');
+            } else {
+                showFeedback('error', 'Please enter valid part number and quantity.');
+            }
+        });
+
+        // Input field guidance
+        const inputs = document.querySelectorAll('input, select, textarea');
+        const guidanceTexts = {
+            'vin': 'Enter the 17-character Vehicle Identification Number exactly as shown on the vehicle label.',
+            'workstation': 'Select your current workstation. This tracks where the vehicle was processed.',
+            'model': 'Choose the exact model and package variant being assembled.',
+            'status': 'Set status based on actual condition: Completed (passed all checks), Hold (needs review), or Rework (needs correction).',
+            'equipment': 'Select the specific equipment experiencing downtime from the list.',
+            'downtime-category': 'Choose the category that best describes the cause of downtime.',
+            'part-number': 'Enter the manufacturer part number found on the component or bin label.'
+        };
+
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                if (state.currentMode === 'tutorial' && guidanceTexts[input.id]) {
+                    document.getElementById('guidance-text').textContent = guidanceTexts[input.id];
+                }
+            });
+        });
+
+        // Initialize
+        switchMode('welcome');
+    </script>
+</body>
+</html>
